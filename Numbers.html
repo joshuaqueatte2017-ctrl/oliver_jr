@@ -1090,5 +1090,94 @@ function clearAll() {
 })();
 </script>
 
+    <script>
+
+document.addEventListener(
+  'contextmenu',
+  function(event) {
+
+    event.preventDefault();
+
+  }
+);
+
+</script>
+
+
+<!-- =============================================================
+     DISABLE DEVELOPER SHORTCUTS
+     ============================================================= -->
+
+<script>
+
+document.addEventListener(
+  'keydown',
+  function(event) {
+
+    /* F12 */
+
+    if (event.key === 'F12') {
+
+      event.preventDefault();
+
+    }
+
+
+    /* Ctrl + U */
+
+    if (
+      event.ctrlKey &&
+      event.key.toLowerCase() === 'u'
+    ) {
+
+      event.preventDefault();
+
+    }
+
+
+    /* Ctrl + Shift + I */
+
+    if (
+      event.ctrlKey &&
+      event.shiftKey &&
+      event.key.toLowerCase() === 'i'
+    ) {
+
+      event.preventDefault();
+
+    }
+
+
+    /* Ctrl + Shift + J */
+
+    if (
+      event.ctrlKey &&
+      event.shiftKey &&
+      event.key.toLowerCase() === 'j'
+    ) {
+
+      event.preventDefault();
+
+    }
+
+
+    /* Ctrl + Shift + C */
+
+    if (
+      event.ctrlKey &&
+      event.shiftKey &&
+      event.key.toLowerCase() === 'c'
+    ) {
+
+      event.preventDefault();
+
+    }
+
+  }
+
+);
+
+</script>
+
 </body>
 </html>
