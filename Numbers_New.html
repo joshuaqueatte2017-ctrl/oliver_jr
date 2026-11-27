@@ -1,0 +1,1242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title></title>
+
+<!-- Excel Export Library -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+<style>
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+body {
+    background: #eef2f7;
+    color: #222;
+}
+
+/* SIDEBAR */
+.sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 240px;
+    height: 100vh;
+    background: linear-gradient(180deg, #171c3a, #242b63);
+    color: white;
+    padding: 25px 15px;
+    box-shadow: 3px 0 15px rgba(0,0,0,0.15);
+}
+
+.logo {
+    text-align: center;
+    margin-bottom: 35px;
+}
+
+.logo-icon {
+    font-size: 42px;
+}
+
+.logo h2 {
+    margin-top: 8px;
+    font-size: 19px;
+}
+
+.logo p {
+    font-size: 11px;
+    color: #bfc6ff;
+    margin-top: 5px;
+}
+
+.menu-title {
+    font-size: 11px;
+    color: #9da6dd;
+    margin: 20px 10px 8px;
+    text-transform: uppercase;
+}
+
+.menu a {
+    display: block;
+    text-decoration: none;
+    color: white;
+    padding: 13px 12px;
+    margin: 5px 0;
+    border-radius: 8px;
+    transition: 0.3s;
+}
+
+.menu a:hover {
+    background: rgba(255,255,255,0.15);
+    transform: translateX(4px);
+}
+
+/* MAIN */
+.main {
+    margin-left: 240px;
+    padding: 25px;
+}
+
+/* HEADER */
+.header {
+    background: white;
+    border-radius: 15px;
+    padding: 22px 25px;
+    margin-bottom: 25px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+}
+
+.header h1 {
+    color: #252b65;
+    font-size: 28px;
+}
+
+.header p {
+    color: #777;
+    margin-top: 6px;
+}
+
+/* STAT CARDS */
+.stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 18px;
+    margin-bottom: 25px;
+}
+
+.card {
+    color: white;
+    padding: 22px;
+    border-radius: 14px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.12);
+}
+
+.card h3 {
+    font-size: 13px;
+    opacity: 0.9;
+}
+
+.card .number {
+    font-size: 32px;
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+.card-icon {
+    position: absolute;
+    right: 18px;
+    top: 18px;
+    font-size: 35px;
+    opacity: 0.25;
+}
+
+.blue {
+    background: linear-gradient(135deg, #2979ff, #1565c0);
+}
+
+.purple {
+    background: linear-gradient(135deg, #9c27b0, #6a1b9a);
+}
+
+.green {
+    background: linear-gradient(135deg, #00b894, #00897b);
+}
+
+.red {
+    background: linear-gradient(135deg, #ff5252, #d50000);
+}
+
+/* PANELS */
+.panel {
+    background: white;
+    border-radius: 15px;
+    padding: 25px;
+    margin-bottom: 25px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+}
+
+.panel-title {
+    color: #252b65;
+    font-size: 19px;
+    font-weight: bold;
+    margin-bottom: 18px;
+}
+
+/* INPUT GRID */
+.input-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 22px;
+}
+
+.form-group {
+    margin-bottom: 18px;
+}
+
+label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 8px;
+    color: #333;
+}
+
+input[type="text"],
+input[type="file"],
+textarea {
+    width: 100%;
+    border: 1px solid #d6d9e5;
+    border-radius: 8px;
+    padding: 12px;
+    outline: none;
+    background: #fafbfe;
+}
+
+input[type="text"]:focus,
+textarea:focus {
+    border-color: #2979ff;
+    box-shadow: 0 0 0 3px rgba(41,121,255,0.1);
+}
+
+textarea {
+    height: 170px;
+    resize: vertical;
+}
+
+/* BUTTONS */
+.buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 10px;
+}
+
+button {
+    border: none;
+    border-radius: 8px;
+    padding: 12px 20px;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.25s;
+}
+
+button:hover {
+    transform: translateY(-2px);
+    opacity: 0.92;
+}
+
+.compare-btn {
+    background: linear-gradient(135deg, #2979ff, #1565c0);
+}
+
+.excel-btn {
+    background: linear-gradient(135deg, #00b894, #00897b);
+}
+
+.clear-btn {
+    background: linear-gradient(135deg, #ff5252, #d50000);
+}
+
+.example-btn {
+    background: linear-gradient(135deg, #9c27b0, #6a1b9a);
+}
+
+/* RESULT */
+.result-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.subject-display {
+    color: #2979ff;
+    font-weight: bold;
+}
+
+.result-box {
+    margin-top: 18px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    max-height: 400px;
+    overflow-y: auto;
+    background: #fafafa;
+}
+
+.result-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.result-table th {
+    background: #252b65;
+    color: white;
+    padding: 12px;
+    position: sticky;
+    top: 0;
+}
+
+.result-table td {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+    text-align: center;
+}
+
+.result-table tr:hover {
+    background: #eef4ff;
+}
+
+.empty {
+    text-align: center;
+    padding: 35px;
+    color: #777;
+}
+
+/* PROGRESS */
+.progress-container {
+    margin-top: 20px;
+    display: none;
+}
+
+.progress-label {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 7px;
+    font-size: 13px;
+}
+
+.progress {
+    width: 100%;
+    height: 12px;
+    background: #e5e7eb;
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+.progress-bar {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #2979ff, #00b894);
+    transition: width 0.2s;
+}
+
+/* FOOTER */
+.footer {
+    text-align: center;
+    color: #777;
+    padding: 15px;
+    font-size: 13px;
+}
+
+/* RESPONSIVE */
+@media(max-width: 1000px) {
+    .stats {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .input-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media(max-width: 700px) {
+    .sidebar {
+        position: relative;
+        width: 100%;
+        height: auto;
+    }
+
+    .main {
+        margin-left: 0;
+    }
+
+    .stats {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+
+<style id="appLoginStyles">
+#appLoginScreen{position:fixed;inset:0;background:linear-gradient(135deg,#101c3a,#4169c1);display:flex;align-items:center;justify-content:center;z-index:999999}
+#appLoginScreen .app-login-card{width:min(420px,92%);background:#fff;border-radius:18px;padding:32px;box-shadow:0 20px 60px rgba(0,0,0,.28);font-family:Arial,sans-serif}
+#appLoginScreen h2{margin:0 0 8px;text-align:center;color:#18243f}
+#appLoginScreen p{text-align:center;color:#64748b;margin:0 0 22px}
+#appLoginScreen label{display:block;font-weight:bold;margin:12px 0 6px;color:#334155}
+#appLoginScreen input{width:100%;box-sizing:border-box;padding:12px;border:1px solid #cbd5e1;border-radius:9px;font-size:15px}
+#appLoginScreen button{width:100%;margin-top:18px;padding:12px;border:0;border-radius:9px;background:#356ae6;color:#fff;font-weight:bold;font-size:15px;cursor:pointer}
+#appLoginScreen button:hover{background:#2857c7}
+#appLoginError{color:#d32f2f;text-align:center;min-height:20px;margin-top:10px;font-weight:bold}
+#appLoginScreen small{display:block;text-align:center;color:#64748b;margin-top:14px}
+</style>
+</head>
+
+<body>
+<div id="appLoginScreen">
+  <div class="app-login-card">
+    <h2>🔐 System Login</h2>
+      <br>
+      <br>
+    <!--<p id="appLoginTitle">Application Login</p>-->
+    <form id="appLoginForm">
+      <label>Username</label>
+      <input id="appLoginUser" autocomplete="username" required>
+      <label>Password</label>
+      <input id="appLoginPass" type="password" autocomplete="current-password" required>
+      <div id="appLoginError"></div>
+      <button type="submit">Login</button>
+ <center><h5>Powered BY: O. Q. Q. IT Services International</h5>
+    <p>GSM: +231770731101</p></center>
+        
+    </form>
+    <!--<small>Default login: <b>admin</b> / <b>admin123</b></small>-->
+  </div>
+</div>
+
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+
+    <div class="logo">
+        <div class="logo-icon">🔍</div>
+        <h2>FIND MISSING</h2>
+        <p>NUMBER ANALYSIS SYSTEM</p>
+    </div>
+
+    <div class="menu-title">Dashboard</div>
+
+    <div class="menu">
+        <a href="https://joshuaqueatte2017-ctrl.github.io/oliver_jr/index.html">🏠 Dashboard</a>
+        <a href="Numbers.html">🔢 Find Missing Numbers</a>
+        <a href="Checker.html">📊File Integrity Checker</a>
+        <a href="HRM.html">📥 HRMS Application</a>
+         <a href="Vertical_Key.html">🔢 Vertical Sorter</a>
+         <a href="Scorer.html">📊Scoring Application</a>
+        <a href="Processor.html">📥 Responses Processor</a>
+    </div>
+
+    <div class="menu-title">Other Applications
+    
+</div>
+
+    <div class="menu">
+        <a href="https://www.google.com" target="_blank">🔗 Google</a>
+
+        <!-- Add your own links here -->
+        <a href="#" target="_blank">🔗 Other System</a>
+    </div>
+
+</div>
+
+
+<!-- MAIN -->
+<div class="main">
+
+    <div class="header">
+        <h1>🔍 QUERY APPLICATION</h1>
+        <p>Compare Candidate Number and Subject Code pairs and identify records missing from Set B.</p>
+    </div>
+
+
+    <!-- STATISTICS -->
+    <div class="stats">
+
+        <div class="card blue">
+            <div class="card-icon">📋</div>
+            <h3>TOTAL IN SET A</h3>
+            <div class="number" id="totalA">0</div>
+        </div>
+
+        <div class="card purple">
+            <div class="card-icon">📋</div>
+            <h3>TOTAL IN SET B</h3>
+            <div class="number" id="totalB">0</div>
+        </div>
+
+        <div class="card red">
+            <div class="card-icon">❌</div>
+            <h3>MISSING NUMBERS</h3>
+            <div class="number" id="totalMissing">0</div>
+        </div>
+
+        <div class="card green">
+            <div class="card-icon">✓</div>
+            <h3>MATCHED NUMBERS</h3>
+            <div class="number" id="totalMatched">0</div>
+        </div>
+
+    </div>
+
+
+    <!-- INPUT -->
+    <div class="panel" id="compare">
+
+        <div class="panel-title">
+            ⚙️ Number Comparison
+        </div>
+
+        <div class="form-group">
+
+            <label>📚 Subject</label>
+
+            <input
+                type="text"
+                id="subject"
+                placeholder="Enter subject name"
+            >
+
+        </div>
+
+
+        <div class="input-grid">
+
+            <!-- SET A -->
+            <div>
+
+                <div class="form-group">
+
+                    <label>🔵 Set A</label>
+
+                    <textarea
+                        id="setA"
+                        placeholder="Paste two columns: Candidate Number and Subject Code (one record per line)...
+
+Example:
+2001005051 207222
+2001005052 207222
+2001005053 207222
+2001005054 207222
+2001005055 207222"
+                    ></textarea>
+
+                </div>
+
+                <div class="form-group">
+
+                    <label>Choose Set A File</label>
+
+                    <input
+                        type="file"
+                        id="fileA"
+                        accept=".txt,.csv,.xlsx,.xls"
+                    >
+
+                </div>
+
+            </div>
+
+
+            <!-- SET B -->
+            <div>
+
+                <div class="form-group">
+
+                    <label>🟣 Set B</label>
+
+                    <textarea
+                        id="setB"
+                        placeholder="Paste two columns: Candidate Number and Subject Code (one record per line)...
+
+Example:
+2001005051 207222
+2001005053 207222
+2001005055 207222"
+                    ></textarea>
+
+                </div>
+
+                <div class="form-group">
+
+                    <label>Choose Set B File</label>
+
+                    <input
+                        type="file"
+                        id="fileB"
+                        accept=".txt,.csv,.xlsx,.xls"
+                    >
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="buttons">
+
+            <button
+                class="compare-btn"
+                onclick="compareNumbers()">
+                🔍 FIND MISSING NUMBERS
+            </button>
+
+            <button
+                class="example-btn"
+                onclick="loadExample()">
+                📝 Load Example
+            </button>
+
+            <button
+                class="clear-btn"
+                onclick="clearAll()">
+                🗑 Clear
+            </button>
+
+        </div>
+
+
+        <!-- PROGRESS BAR -->
+        <div class="progress-container" id="progressContainer">
+
+            <div class="progress-label">
+                <span>Processing...</span>
+                <span id="progressPercent">0%</span>
+            </div>
+
+            <div class="progress">
+                <div
+                    class="progress-bar"
+                    id="progressBar">
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- RESULTS -->
+    <div class="panel" id="results">
+
+        <div class="result-header">
+
+            <div class="panel-title">
+                📊 Missing Numbers
+            </div>
+
+            <div>
+                Subject:
+                <span
+                    class="subject-display"
+                    id="subjectDisplay">
+                    —
+                </span>
+            </div>
+
+        </div>
+
+
+        <div class="buttons">
+
+            <button
+                class="excel-btn"
+                onclick="exportExcel()"
+                id="export">
+                📥 EXPORT TO EXCEL
+            </button>
+
+        </div>
+
+
+        <div class="result-box">
+
+            <table class="result-table">
+
+                <thead>
+                    <tr>
+                        <th>Candidate Number</th>
+                        <th>Subject Code</th>
+                    </tr>
+                </thead>
+
+                <tbody id="resultBody">
+
+                    <tr>
+                        <td colspan="2" class="empty">
+                            No comparison has been performed.
+                        </td>
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+
+    <div class="footer">
+       Powered By: O.Q.Q Services International © 2026
+    </div>
+
+</div>
+
+
+<script>
+
+/* GLOBAL RESULT */
+let missingNumbers = [];
+let matchedNumbers = [];
+
+
+/* GET NUMBERS */
+function extractNumbers(text) {
+    const rows = [];
+    for (const [i,line] of text.split(/\r?\n/).entries()) {
+        if (!line.trim()) continue;
+        const fields = line.trim().split(/[\s,;|]+/).map(x => x.replace(/^"|"$/g, ''));
+        if (/^candidate/i.test(line.trim())) continue;
+        if (fields.length !== 2 || !/^\d{10}$/.test(fields[0]) || !/^\d{6}$/.test(fields[1])) throw new Error(`Invalid record on line ${i+1}: expected 10-digit candidate number and 6-digit subject code.`);
+        rows.push(fields.join('\t'));
+    }
+    return rows;
+}
+for (const suffix of ['A','B']) {
+    document.getElementById('file'+suffix).addEventListener('change', async function() {
+        const file = this.files[0]; if (!file) return;
+        try {
+            let text;
+            if (/\.xlsx?$/i.test(file.name)) {
+                if (typeof XLSX === 'undefined') throw new Error('Excel library unavailable. Check internet connection.');
+                const wb = XLSX.read(await file.arrayBuffer(), {type:'array'});
+                text = XLSX.utils.sheet_to_csv(wb.Sheets[wb.SheetNames[0]], {FS:'\t', blankrows:false});
+            } else text = await file.text();
+            document.getElementById('set'+suffix).value = text;
+        } catch(e) { alert(e.message); }
+    });
+}
+
+/* COMPARE */
+function compareNumbers() {
+
+    const subject =
+        document.getElementById("subject").value.trim();
+
+    const textA =
+        document.getElementById("setA").value;
+
+    const textB =
+        document.getElementById("setB").value;
+
+
+    if (!textA.trim()) {
+
+        alert("Please enter Set A.");
+
+        return;
+    }
+
+
+    if (!textB.trim()) {
+
+        alert("Please enter Set B.");
+
+        return;
+    }
+
+
+    let A, B;
+    try { A = extractNumbers(textA); B = extractNumbers(textB); } catch(e) { alert(e.message); return; }
+    if (!A.length) { alert("Set A has no valid records."); return; }
+
+
+    document.getElementById("totalA").textContent =
+        new Set(A).size.toLocaleString();
+
+    document.getElementById("totalB").textContent =
+        new Set(B).size.toLocaleString();
+
+
+    /* USE SET FOR FAST SEARCH */
+    const setB = new Set(B);
+
+
+    missingNumbers = [];
+    matchedNumbers = [];
+
+
+    const uniqueA = [...new Set(A)];
+
+
+    let i = 0;
+
+    const progressContainer =
+        document.getElementById("progressContainer");
+
+    progressContainer.style.display = "block";
+
+
+    function processBatch() {
+
+        const batchSize = 5000;
+
+        const end =
+            Math.min(i + batchSize, uniqueA.length);
+
+
+        for (; i < end; i++) {
+
+            const number = uniqueA[i];
+
+            if (setB.has(number)) {
+
+                matchedNumbers.push(number);
+
+            } else {
+
+                missingNumbers.push(number);
+
+            }
+
+        }
+
+
+        const percent =
+            Math.round((i / uniqueA.length) * 100);
+
+
+        document.getElementById("progressBar")
+            .style.width = percent + "%";
+
+        document.getElementById("progressPercent")
+            .textContent = percent + "%";
+
+
+        if (i < uniqueA.length) {
+
+            setTimeout(processBatch, 0);
+
+        } else {
+
+            finishComparison();
+
+        }
+
+    }
+
+
+    processBatch();
+
+}
+
+
+/* FINISH */
+function finishComparison() {
+
+    document.getElementById("totalMissing")
+        .textContent =
+        missingNumbers.length.toLocaleString();
+
+
+    document.getElementById("totalMatched")
+        .textContent =
+        matchedNumbers.length.toLocaleString();
+
+
+    document.getElementById("subjectDisplay")
+        .textContent =
+        document.getElementById("subject").value.trim() || "—";
+
+
+    displayResults();
+
+
+    setTimeout(() => {
+
+        document.getElementById("progressContainer")
+            .style.display = "none";
+
+    }, 500);
+
+}
+
+
+/* DISPLAY */
+function displayResults() {
+
+    const body =
+        document.getElementById("resultBody");
+
+    body.innerHTML = "";
+
+
+    if (missingNumbers.length === 0) {
+
+        body.innerHTML = `
+            <tr>
+                <td colspan="2" class="empty">
+                    ✅ No missing numbers found.
+                </td>
+            </tr>
+        `;
+
+        return;
+
+    }
+
+
+    const fragment =
+        document.createDocumentFragment();
+
+
+    missingNumbers.forEach((number, index) => {
+
+        const row =
+            document.createElement("tr");
+
+        row.innerHTML = `
+            <td>${escapeHTML(number.split("\t")[0])}</td>
+            <td>${escapeHTML(number.split("\t")[1])}</td>
+        `;
+
+        fragment.appendChild(row);
+
+    });
+
+
+    body.appendChild(fragment);
+
+}
+
+
+/* ESCAPE HTML */
+function escapeHTML(value) {
+
+    const div = document.createElement("div");
+
+    div.textContent = value;
+
+    return div.innerHTML;
+
+}
+
+
+/* EXPORT EXCEL */
+function exportExcel() {
+
+    if (missingNumbers.length === 0) {
+
+        alert("There are no missing numbers to export.");
+
+        return;
+
+    }
+
+
+    if (typeof XLSX === "undefined") {
+
+        alert("Excel library could not be loaded. Please check your internet connection.");
+
+        return;
+
+    }
+
+
+    const subject =
+        document.getElementById("subject").value.trim()
+        || "Missing Numbers";
+
+
+    const rows = missingNumbers.map(number => number.split('\t'));
+
+    const worksheet =
+        XLSX.utils.aoa_to_sheet(rows);
+
+
+    worksheet["!cols"] = [
+        { wch: 25 },
+        { wch: 25 }
+    ];
+
+
+    const workbook =
+        XLSX.utils.book_new();
+
+
+    XLSX.utils.book_append_sheet(
+        workbook,
+        worksheet,
+        "Missing Numbers"
+    );
+
+
+    const filename =
+        subject.replace(/[^a-z0-9]/gi, "_")
+        + "_Missing_Numbers.xlsx";
+
+
+    XLSX.writeFile(
+        workbook,
+        filename
+    );
+
+}
+
+
+/* EXAMPLE */
+function loadExample() {
+    document.getElementById('subject').value = '207222';
+    document.getElementById('setA').value = Array.from({length:10}, (_,i) => `${2001005051+i}\t207222`).join('\n');
+    document.getElementById('setB').value = [2001005051,2001005053,2001005055,2001005057,2001005059].map(n => `${n}\t207222`).join('\n');
+}
+
+/* CLEAR */
+function clearAll() {
+
+    document.getElementById("subject").value = "";
+
+    document.getElementById("setA").value = "";
+
+    document.getElementById("setB").value = "";
+
+    document.getElementById("fileA").value = "";
+
+    document.getElementById("fileB").value = "";
+
+
+    document.getElementById("totalA")
+        .textContent = "0";
+
+    document.getElementById("totalB")
+        .textContent = "0";
+
+    document.getElementById("totalMissing")
+        .textContent = "0";
+
+    document.getElementById("totalMatched")
+        .textContent = "0";
+
+
+    document.getElementById("subjectDisplay")
+        .textContent = "—";
+
+
+    document.getElementById("resultBody").innerHTML = `
+        <tr>
+            <td colspan="2" class="empty">
+                No comparison has been performed.
+            </td>
+        </tr>
+    `;
+
+
+    missingNumbers = [];
+
+    matchedNumbers = [];
+
+}
+
+</script>
+
+
+<script id="appLoginScript">
+(function(){
+  const key="appLogin_"+location.pathname.split('/').pop().replace(/[^a-z0-9]/gi,'_');
+  const screen=document.getElementById('appLoginScreen');
+  const form=document.getElementById('appLoginForm');
+  const user=document.getElementById('appLoginUser');
+  const pass=document.getElementById('appLoginPass');
+  const error=document.getElementById('appLoginError');
+  const title=document.getElementById('appLoginTitle');
+  const appName=(document.title||'Application').trim();
+  if(title) title.textContent=appName+' Login';
+  function unlock(){screen.style.display='none';document.body.style.overflow='';}
+  if(sessionStorage.getItem(key)==='true') unlock(); else document.body.style.overflow='hidden';
+  form.addEventListener('submit',function(e){
+    e.preventDefault();
+    if(user.value.trim()==='admin' && pass.value==='admin123'){
+      sessionStorage.setItem(key,'true'); error.textContent=''; unlock();
+    }else{ error.textContent='Invalid username or password.'; pass.value=''; pass.focus(); }
+  });
+})();
+</script>
+
+    <script>
+
+document.addEventListener(
+  'contextmenu',
+  function(event) {
+
+    event.preventDefault();
+
+  }
+);
+
+</script>
+
+
+<!-- =============================================================
+     DISABLE DEVELOPER SHORTCUTS
+     ============================================================= -->
+
+<script>
+
+document.addEventListener(
+  'keydown',
+  function(event) {
+
+    /* F12 */
+
+    if (event.key === 'F12') {
+
+      event.preventDefault();
+
+    }
+
+
+    /* Ctrl + U */
+
+    if (
+      event.ctrlKey &&
+      event.key.toLowerCase() === 'u'
+    ) {
+
+      event.preventDefault();
+
+    }
+
+
+    /* Ctrl + Shift + I */
+
+    if (
+      event.ctrlKey &&
+      event.shiftKey &&
+      event.key.toLowerCase() === 'i'
+    ) {
+
+      event.preventDefault();
+
+    }
+
+
+    /* Ctrl + Shift + J */
+
+    if (
+      event.ctrlKey &&
+      event.shiftKey &&
+      event.key.toLowerCase() === 'j'
+    ) {
+
+      event.preventDefault();
+
+    }
+
+
+    /* Ctrl + Shift + C */
+
+    if (
+      event.ctrlKey &&
+      event.shiftKey &&
+      event.key.toLowerCase() === 'c'
+    ) {
+
+      event.preventDefault();
+
+    }
+
+  }
+
+);
+
+</script>
+
+    <script>
+
+document.addEventListener(
+  'contextmenu',
+  function(event) {
+
+    event.preventDefault();
+
+  }
+);
+
+</script>
+
+
+<!-- =============================================================
+     DISABLE DEVELOPER SHORTCUTS
+     ============================================================= -->
+
+<script>
+
+document.addEventListener(
+  'keydown',
+  function(event) {
+
+    /* F12 */
+
+    if (event.key === 'F12') {
+
+      event.preventDefault();
+
+    }
+
+
+    /* Ctrl + U */
+
+    if (
+      event.ctrlKey &&
+      event.key.toLowerCase() === 'u'
+    ) {
+
+      event.preventDefault();
+
+    }
+
+
+    /* Ctrl + Shift + I */
+
+    if (
+      event.ctrlKey &&
+      event.shiftKey &&
+      event.key.toLowerCase() === 'i'
+    ) {
+
+      event.preventDefault();
+
+    }
+
+
+    /* Ctrl + Shift + J */
+
+    if (
+      event.ctrlKey &&
+      event.shiftKey &&
+      event.key.toLowerCase() === 'j'
+    ) {
+
+      event.preventDefault();
+
+    }
+
+
+    /* Ctrl + Shift + C */
+
+    if (
+      event.ctrlKey &&
+      event.shiftKey &&
+      event.key.toLowerCase() === 'c'
+    ) {
+
+      event.preventDefault();
+
+    }
+
+  }
+
+);
+
+</script>
+
+</body>
+</html>
